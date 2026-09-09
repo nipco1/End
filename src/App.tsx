@@ -1,4 +1,4 @@
-import { useState, createContext, useContext } from 'react';
+import { useState, createContext, useContext, useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Layout from './components/Layout';
@@ -14,10 +14,10 @@ import AuditLog from './pages/AuditLog';
 import Settings from './pages/Settings';
 import Workflows from './pages/Workflows';
 import Meetings from './pages/Meetings';
+import { StoreContext, getStore, StoreState } from './store';
+import { ToastContainer } from './components/Modals';
 
 interface AppContextType {
-  user: User | null;
-  setUser: (u: User | null) => void;
   darkMode: boolean;
   toggleDark: () => void;
   sidebarCollapsed: boolean;
@@ -26,18 +26,7 @@ interface AppContextType {
   setLanguage: (l: 'fa' | 'en') => void;
 }
 
-interface User {
-  id: string;
-  username: string;
-  fullName: string;
-  role: string;
-  department: string;
-  avatar?: string;
-}
-
 export const AppContext = createContext<AppContextType>({
-  user: null,
-  setUser: () => {},
   darkMode: false,
   toggleDark: () => {},
   sidebarCollapsed: false,
@@ -49,10 +38,17 @@ export const AppContext = createContext<AppContextType>({
 export const useApp = () => useContext(AppContext);
 
 function App() {
-  const [user, setUser] = useState<User | null>(null);
+  const store = getStore();
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [language, setLanguage] = useState<'fa' | 'en'>('fa');
+  const [, setRender] = useState(0);
+
+  // Force re-render when store changes
+  useEffect(() => {
+    const interval = setInterval(() => setRender(r => r + 1), 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const toggleDark = () => {
     setDarkMode(!darkMode);
@@ -61,33 +57,35 @@ function App() {
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
 
   return (
-    <AppContext.Provider value={{
-      user, setUser,
-      darkMode, toggleDark,
-      sidebarCollapsed, toggleSidebar,
-      language, setLanguage,
-    }}>
-      <HashRouter>
-        <Routes>
-          <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
-          <Route path="/" element={user ? <Layout /> : <Navigate to="/login" />}>
-            <Route index element={<Dashboard />} />
-            <Route path="documents" element={<Documents />} />
-            <Route path="knowledge-tree" element={<KnowledgeTree />} />
-            <Route path="storage" element={<StorageControl />} />
-            <Route path="search" element={<SearchPage />} />
-            <Route path="ai" element={<AIAssistant />} />
-            <Route path="reports" element={<Reports />} />
-            <Route path="archive" element={<Archive />} />
-            <Route path="audit" element={<AuditLog />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="workflows" element={<Workflows />} />
-            <Route path="meetings" element={<Meetings />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </HashRouter>
-    </AppContext.Provider>
+    <StoreContext.Provider value={store}>
+      <AppContext.Provider value={{
+        darkMode, toggleDark,
+        sidebarCollapsed, toggleSidebar,
+        language, setLanguage,
+      }}>
+        <HashRouter>
+          <Routes>
+            <Route path="/login" element={store.user ? <Navigate to="/" /> : <Login />} />
+            <Route path="/" element={store.user ? <Layout /> : <Navigate to="/login" />}>
+              <Route index element={<Dashboard />} />
+              <Route path="documents" element={<Documents />} />
+              <Route path="knowledge-tree" element={<KnowledgeTree />} />
+              <Route path="storage" element={<StorageControl />} />
+              <Route path="search" element={<SearchPage />} />
+              <Route path="ai" element={<AIAssistant />} />
+              <Route path="reports" element={<Reports />} />
+              <Route path="archive" element={<Archive />} />
+              <Route path="audit" element={<AuditLog />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="workflows" element={<Workflows />} />
+              <Route path="meetings" element={<Meetings />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+          <ToastContainer />
+        </HashRouter>
+      </AppContext.Provider>
+    </StoreContext.Provider>
   );
 }
 

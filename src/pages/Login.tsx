@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useApp } from '../App';
 import { useNavigate } from 'react-router-dom';
+import { useStore } from '../store';
 import { Lock, User, Eye, EyeOff, Shield } from 'lucide-react';
 
 export default function Login() {
-  const { setUser } = useApp();
+  const store = useStore();
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -19,14 +19,12 @@ export default function Login() {
     
     setTimeout(() => {
       if (username && password) {
-        setUser({
-          id: '1',
-          username,
-          fullName: 'مهندس احمدی',
-          role: 'مدیر دانش',
-          department: 'مهندسی',
-        });
-        navigate('/');
+        const success = store.login(username, password);
+        if (success) {
+          navigate('/');
+        } else {
+          setError('نام کاربری یا رمز عبور اشتباه است');
+        }
       } else {
         setError('نام کاربری و رمز عبور الزامی است');
       }

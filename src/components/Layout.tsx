@@ -1,5 +1,6 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useApp } from '../App';
+import { useStore } from '../store';
 import {
   LayoutDashboard, FileText, GitBranch, HardDrive, Search,
   Brain, BarChart3, Archive, Shield, Settings, GitMerge,
@@ -23,13 +24,15 @@ const navItems = [
 ];
 
 export default function Layout() {
-  const { user, setUser, darkMode, toggleDark, sidebarCollapsed, toggleSidebar, language } = useApp();
+  const { darkMode, toggleDark, sidebarCollapsed, toggleSidebar, language } = useApp();
+  const store = useStore();
   const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
+  const user = store.user;
 
   const handleLogout = () => {
-    setUser(null);
+    store.logout();
     navigate('/login');
   };
 

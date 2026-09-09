@@ -51,13 +51,13 @@ export default function Settings() {
         {activeSection === 'security' && <SecuritySettings />}
         {activeSection === 'storage' && <StorageSettings />}
         {activeSection === 'ai' && <AISettings />}
-        {!['general', 'branding', 'users', 'security', 'storage', 'ai'].includes(activeSection) && (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <SettingsIcon size={48} className="text-slate-300 dark:text-slate-600 mb-3" />
-            <p className="text-sm text-slate-500">تنظیمات بخش «{settingsSections.find(s => s.id === activeSection)?.label}»</p>
-            <p className="text-xs text-slate-400 mt-1">این بخش قابل پیکربندی از طریق پنل مدیریت است</p>
-          </div>
-        )}
+        {activeSection === 'search' && <SearchSettings />}
+        {activeSection === 'notification' && <NotificationSettings />}
+        {activeSection === 'language' && <LanguageSettings />}
+        {activeSection === 'database' && <DatabaseSettings />}
+        {activeSection === 'documents' && <DocumentTypesSettings />}
+        {activeSection === 'workflow' && <WorkflowSettingsPage />}
+        {activeSection === 'archive' && <ArchiveSettings />}
       </div>
     </div>
   );
@@ -192,6 +192,153 @@ function AISettings() {
         <SettingRow label="Temperature" value="0.3" type="number" />
         <SettingRow label="Citation اجباری" value="true" type="toggle" />
         <SettingRow label="Human-in-the-Loop" value="true" type="toggle" />
+      </div>
+      <button className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">ذخیره</button>
+    </div>
+  );
+}
+
+function SearchSettings() {
+  return (
+    <div className="space-y-6">
+      <h2 className="text-lg font-bold text-slate-800 dark:text-white">جست‌وجو</h2>
+      <div className="space-y-4">
+        <SettingRow label="موتور جست‌وجو" value="Internal + Full-Text SQL" type="select" options={['Internal', 'Elasticsearch', 'OpenSearch', 'Full-Text SQL']} />
+        <SettingRow label="جست‌وجوی فارسی" value="true" type="toggle" />
+        <SettingRow label="تحمل ی/ي و ک/ك" value="true" type="toggle" />
+        <SettingRow label="نرمال‌سازی نیم‌فاصله" value="true" type="toggle" />
+        <SettingRow label="جست‌وجو در OCR" value="true" type="toggle" />
+        <SettingRow label="Search Suggestions" value="true" type="toggle" />
+        <SettingRow label="Semantic Search (AI)" value="true" type="toggle" />
+        <SettingRow label="حداکثر نتایج" value="100" type="number" />
+      </div>
+      <button className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">ذخیره</button>
+    </div>
+  );
+}
+
+function NotificationSettings() {
+  return (
+    <div className="space-y-6">
+      <h2 className="text-lg font-bold text-slate-800 dark:text-white">اعلان‌ها</h2>
+      <div className="space-y-4">
+        <SettingRow label="اعلان داخلی" value="true" type="toggle" />
+        <SettingRow label="Email" value="false" type="toggle" />
+        <SettingRow label="Push Notification" value="true" type="toggle" />
+        <SettingRow label="اعلان تأیید در انتظار" value="true" type="toggle" />
+        <SettingRow label="اعلان انقضای سند" value="true" type="toggle" />
+        <SettingRow label="اعلان Storage Threshold" value="true" type="toggle" />
+        <SettingRow label="اعلان Security Alert" value="true" type="toggle" />
+        <SettingRow label="SMTP Server" value="smtp.nipco.ir" type="text" />
+        <SettingRow label="SMTP Port" value="587" type="number" />
+      </div>
+      <button className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">ذخیره</button>
+    </div>
+  );
+}
+
+function LanguageSettings() {
+  return (
+    <div className="space-y-6">
+      <h2 className="text-lg font-bold text-slate-800 dark:text-white">زبان و تقویم</h2>
+      <div className="space-y-4">
+        <SettingRow label="زبان پیش‌فرض" value="فارسی" type="select" options={['فارسی', 'English']} />
+        <SettingRow label="تقویم" value="شمسی (Jalali)" type="select" options={['شمسی (Jalali)', 'میلادی (Gregorian)']} />
+        <SettingRow label="جهت متن (RTL/LTR)" value="RTL" type="select" options={['RTL', 'LTR']} />
+        <SettingRow label="فرمت تاریخ" value="yyyy/mm/dd" type="select" options={['yyyy/mm/dd', 'dd/mm/yyyy', 'mm/dd/yyyy']} />
+        <SettingRow label="فرمت ساعت" value="24 ساعته" type="select" options={['24 ساعته', '12 ساعته']} />
+        <SettingRow label="منطقه زمانی" value="Asia/Tehran (UTC+3:30)" type="text" />
+        <SettingRow label="اعداد فارسی" value="true" type="toggle" />
+      </div>
+      <button className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">ذخیره</button>
+    </div>
+  );
+}
+
+function DatabaseSettings() {
+  return (
+    <div className="space-y-6">
+      <h2 className="text-lg font-bold text-slate-800 dark:text-white">پایگاه داده</h2>
+      <div className="space-y-4">
+        <SettingRow label="نوع Database" value="SQL Server 2022" type="select" options={['SQL Server 2022', 'PostgreSQL', 'MySQL']} />
+        <SettingRow label="Connection String" value="Server=localhost;Database=NipcoKMS;" type="text" />
+        <SettingRow label="حداکثر Connection" value="100" type="number" />
+        <SettingRow label="Connection Timeout" value="30" type="number" />
+        <SettingRow label="Encryption" value="true" type="toggle" />
+        <SettingRow label="Partitioning" value="true" type="toggle" />
+        <SettingRow label="Backup خودکار" value="true" type="toggle" />
+        <SettingRow label="زمان Backup" value="02:00" type="text" />
+      </div>
+      <button className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">ذخیره</button>
+    </div>
+  );
+}
+
+function DocumentTypesSettings() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-bold text-slate-800 dark:text-white">انواع سند</h2>
+        <button className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs">+ نوع جدید</button>
+      </div>
+      <div className="space-y-2">
+        {[
+          { name: 'PDF', mime: 'application/pdf', icon: '📄', allowed: true },
+          { name: 'Word', mime: 'application/msword', icon: '📝', allowed: true },
+          { name: 'Excel', mime: 'application/vnd.ms-excel', icon: '📊', allowed: true },
+          { name: 'PowerPoint', mime: 'application/vnd.ms-powerpoint', icon: '📊', allowed: true },
+          { name: 'تصویر', mime: 'image/*', icon: '🖼️', allowed: true },
+          { name: 'ویدئو', mime: 'video/*', icon: '🎬', allowed: true },
+          { name: 'CAD', mime: 'application/acad', icon: '📐', allowed: true },
+          { name: 'ZIP', mime: 'application/zip', icon: '📦', allowed: true },
+          { name: 'EXE', mime: 'application/x-executable', icon: '⚠️', allowed: false },
+        ].map((t, i) => (
+          <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+            <span className="text-xl">{t.icon}</span>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{t.name}</p>
+              <p className="text-[10px] text-slate-500">{t.mime}</p>
+            </div>
+            <span className={`badge ${t.allowed ? 'badge-success' : 'badge-danger'}`}>{t.allowed ? 'مجاز' : 'غیرمجاز'}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function WorkflowSettingsPage() {
+  return (
+    <div className="space-y-6">
+      <h2 className="text-lg font-bold text-slate-800 dark:text-white">گردش کار</h2>
+      <div className="space-y-4">
+        <SettingRow label="Workflow پیش‌فرض" value="تأیید اسناد فنی" type="select" options={['تأیید اسناد فنی', 'گزارش خرابی', 'استاندارد جدید']} />
+        <SettingRow label="SLA پیش‌فرض (روز)" value="3" type="number" />
+        <SettingRow label="Escalation خودکار" value="true" type="toggle" />
+        <SettingRow label="Reject اجباری با دلیل" value="true" type="toggle" />
+        <SettingRow label="قفل بعد از Approval" value="true" type="toggle" />
+        <SettingRow label="اعلان در هر مرحله" value="true" type="toggle" />
+        <SettingRow label="امضای دیجیتال" value="false" type="toggle" />
+      </div>
+      <button className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">ذخیره</button>
+    </div>
+  );
+}
+
+function ArchiveSettings() {
+  return (
+    <div className="space-y-6">
+      <h2 className="text-lg font-bold text-slate-800 dark:text-white">آرشیو و Retention</h2>
+      <div className="space-y-4">
+        <SettingRow label="Retention پیش‌فرض (سال)" value="10" type="number" />
+        <SettingRow label="Cold Archive بعد از (ماه)" value="12" type="number" />
+        <SettingRow label="Legal Hold" value="true" type="toggle" />
+        <SettingRow label="Review قبل از Expiry" value="true" type="toggle" />
+        <SettingRow label="هشدار قبل از Expiry (روز)" value="30" type="number" />
+        <SettingRow label="Archive خودکار" value="false" type="toggle" />
+        <SettingRow label="Backup قبل از Archive" value="true" type="toggle" />
+        <SettingRow label="Integrity Check دوره‌ای" value="true" type="toggle" />
+        <SettingRow label="دوره Integrity Check (روز)" value="7" type="number" />
       </div>
       <button className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">ذخیره</button>
     </div>

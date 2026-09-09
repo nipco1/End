@@ -1,4 +1,7 @@
 import { GitMerge, CheckCircle, Clock, XCircle, ArrowLeft, Plus, Settings } from 'lucide-react';
+import { useStore } from '../store';
+import { CreateWorkflowModal } from '../components/Modals';
+import { useState } from 'react';
 
 const workflows = [
   {
@@ -47,6 +50,10 @@ const pendingApprovals = [
 ];
 
 export default function Workflows() {
+  const store = useStore();
+  const [showCreateWorkflow, setShowCreateWorkflow] = useState(false);
+  const currentWorkflows = store.workflows.length > 0 ? store.workflows : workflows;
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
@@ -55,7 +62,7 @@ export default function Workflows() {
           <h1 className="text-xl font-bold text-slate-800 dark:text-white">گردش کار (Workflow)</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">طراحی و مدیریت فرایندهای تأیید و انتشار اسناد</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">
+        <button onClick={() => setShowCreateWorkflow(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">
           <Plus size={16} /> گردش کار جدید
         </button>
       </div>
@@ -63,7 +70,7 @@ export default function Workflows() {
       {/* Workflow Templates */}
       <div className="space-y-4">
         <h2 className="font-medium text-sm text-slate-700 dark:text-slate-300">گردش کارهای فعال</h2>
-        {workflows.map(wf => (
+        {currentWorkflows.map(wf => (
           <div key={wf.id} className="card p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
@@ -90,7 +97,7 @@ export default function Workflows() {
                     'bg-slate-100 dark:bg-slate-700 text-slate-500'
                   }`}>
                     {i < wf.currentStep ? <CheckCircle size={12} /> : i === wf.currentStep ? <Clock size={12} /> : null}
-                    {step}
+                    {typeof step === 'string' ? step : step.name}
                   </div>
                   {i < wf.steps.length - 1 && (
                     <ArrowLeft size={14} className="text-slate-300 mx-1 flex-shrink-0" />
@@ -150,6 +157,8 @@ export default function Workflows() {
           </div>
         </div>
       </div>
+
+      <CreateWorkflowModal isOpen={showCreateWorkflow} onClose={() => setShowCreateWorkflow(false)} />
     </div>
   );
 }
